@@ -96,19 +96,12 @@ const VolunteerForm = () => {
                         Frivillig Attest
                     </Typography>
                 </Grid>
-                <Grid
-                    item xs={2}
-                    justifyContent="center"
-                    sx={{
-                        border: '1px solid',
-                        borderColor: '#009ffe.300',
-                        borderRadius: '4px',
-                    }}>
-                    {/*todo gjør finere*/}
-                        <Link href={"/login"}>
-                            <Typography variant="h6">Admin innlogging</Typography>
-                        </Link>
-
+                <Grid item xs={2}>
+                    <Link href="/login" passHref>
+                        <Button variant="contained" color="primary">
+                            Admin innlogging
+                        </Button>
+                    </Link>
                 </Grid>
             </Grid>
             <form onSubmit={handleSubmit}>
@@ -140,7 +133,7 @@ const VolunteerForm = () => {
                             ))}
                         </Select>
                         <FormHelperText>
-                            <Typography>Velg UGP eller HS</Typography>
+                            Velg UGP eller HS
                         </FormHelperText>
                     </Grid>
                     <Grid item xs={6} md={5}>
@@ -255,6 +248,7 @@ const VolunteerForm = () => {
                 message="Er du sikker på at du vil lagre disse dataene?"
                 onConfirm={handleConfirmSubmit}
                 onClose={() => setOpenConfirmDialog(false)}
+                details={formatVolunteerDetails(formData)}
                 confirmButtonText="Ja, lagre"
             />
 

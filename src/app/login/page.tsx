@@ -15,7 +15,7 @@ const LoginPage: React.FC = () => {
             await login(email, password);
         } catch (error) {
             console.error('Login failed:', error);
-            alert('Innlogging mislyktes: ' + (error as Error).message);
+
         }
     };
 
@@ -23,39 +23,28 @@ const LoginPage: React.FC = () => {
         await logout();
     };
 
-    if (currentUser) {
-        return (
-            <>
-                <Container component="main"  maxWidth="lg">
-                    <Grid container spacing={2}>
-                        <Grid item lg={6} justifyContent="center" spacing={2}>
-                            <Typography variant="h6">
-                                Velkommen, {currentUser.email}
-                            </Typography>
-                        </Grid>
-
-                        <Grid item lg={12}>
-                            <AdminPage></AdminPage>
-                        </Grid>
-                        <Grid item lg={2} >
-                            <Button
-                                variant="contained"
-                                onClick={handleLogout}
-                                sx={{mt: 1, mb: 1}}
-                            >
-                                <Typography>Logg Ut</Typography>
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Container>
-            </>
-        );
-    }
-
     return (
-        <>
-            <Container component="main">
+        <Container component="main" maxWidth="lg">
+            {currentUser ? (
+                <Grid container spacing={2}>
+                    <Grid item lg={6} justifyContent="center" spacing={2}>
+                        <Typography variant="h6">
+                            Velkommen, {currentUser.email}
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            onClick={handleLogout}
+                            sx={{ mt: 1, mb: 1 }}
+                        >
+                            <Typography>Logg Ut</Typography>
+                        </Button>
+                    </Grid>
+                    <Grid item lg={12}>
+                        <AdminPage />
+                    </Grid>
 
+                </Grid>
+            ) : (
                 <Box
                     sx={{
                         marginTop: 8,
@@ -67,7 +56,7 @@ const LoginPage: React.FC = () => {
                     <Typography component="h1" variant="h5">
                         Logg inn
                     </Typography>
-                    <Box component="form" onSubmit={handleLogin} sx={{mt: 1}}>
+                    <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -94,7 +83,7 @@ const LoginPage: React.FC = () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{mt: 3, mb: 2}}
+                            sx={{ mt: 3, mb: 2 }}
                         >
                             <Typography>
                                 Logg Inn
@@ -102,8 +91,8 @@ const LoginPage: React.FC = () => {
                         </Button>
                     </Box>
                 </Box>
-            </Container>
-        </>
+            )}
+        </Container>
     );
 };
 

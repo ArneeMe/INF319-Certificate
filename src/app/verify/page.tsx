@@ -2,16 +2,18 @@
 import React, {useEffect, useState} from 'react';
 import {useSearchParams} from 'next/navigation';
 import {ExtraRole, Volunteer} from '@/app/util/Volunteer';
-import {Box, Button, Grid, TextField, Typography} from '@mui/material';
+import {Box, Button, Grid, Palette, TextField, Typography} from '@mui/material';
 import {collection, getDocs, query, where} from 'firebase/firestore';
 import {db} from '@/app/firebase/fb_config';
 import {hashFunction} from "@/app/util/hashFunction";
+import {customTheme} from "@/app/style/customTheme";
 
 const Verify: React.FC = () => {
     const paramsString = useSearchParams().toString();
     const paramsArray: string[] = paramsString.split('_').map(param => decodeURIComponent(param.replace(/\+/g, ' ')));
     paramsArray[paramsArray.length - 1] = paramsArray[paramsArray.length - 1].slice(0, -1); //removed because = char in URL
     const [verificationResult, setVerificationResult] = useState<'verified' | 'invalid' | null>(null);
+    const colorTheme:Palette = customTheme.palette
 
     const verifyHash = async () => {
         const toCheck = [
@@ -84,7 +86,23 @@ const Verify: React.FC = () => {
         ],
     });
 
-    // Funksjon for å oppdatere verdien i input-feltet
+    const formFields: Array<{ label: string; key: keyof Volunteer }> = [
+        { label: 'Rolle', key: 'role' },
+        { label: 'Gruppe', key: 'groupName' },
+        { label: 'Startdato', key: 'startDate' },
+        { label: 'Sluttdato', key: 'endDate' },
+    ];
+
+    const getColor = () => {
+        if (verificationResult === 'verified') {
+            return colorTheme.primary.main;
+        } else if (verificationResult === 'invalid') {
+            return colorTheme.error.main;
+        } else {
+            return colorTheme.secondary.main;
+        }
+    };
+
     const handleChange = (field: keyof Volunteer, value: string) => {
         setFormData((prev: Volunteer) => ({...prev, [field]: value}));
         verifyHash()
@@ -102,11 +120,12 @@ const Verify: React.FC = () => {
     },);
 
     return (
-        <Box sx={{
-            border: `5px solid ${verificationResult === 'verified' ? '#006647' : verificationResult === 'invalid' ? '#761a19' : '#FFA500'}`, // Orange for loading
+        <Box color={getColor}
+            sx={{
+            border: `5px solid ${getColor()}`,
             padding: 1,
             borderRadius: 2,
-            margin: 2, //todo gjøre finere
+            margin: 2,
         }}>
             <Typography variant="h3">Verifikasjon</Typography>
             <Grid item xs={12} md={6}>
@@ -115,13 +134,13 @@ const Verify: React.FC = () => {
                 </Button>
             </Grid>
             <Grid item xs={12} md={6}>
-                {verificationResult === null ? (
-                    <Typography variant="h6" sx={{ color: '#FFA500' }}>Laster...</Typography> // Loading message
-                ) : (
-                    <Typography variant="h6" sx={{ color: verificationResult === 'verified' ? '#006647' : '#761a19' }}>
-                        {verificationResult === 'verified' ? "Attesten er gyldig!" : "Attesten er ugyldig."}
-                    </Typography>
-                )}
+                <Typography variant="h6" color={getColor()}>
+                    {verificationResult === null
+                        ? "Laster..."
+                        : verificationResult === 'verified'
+                            ? "Attesten er gyldig!"
+                            : "Attesten er ugyldig."}
+                </Typography>
             </Grid>
             <Box>
                 <Grid container spacing={2} paddingTop={2}>
@@ -136,47 +155,20 @@ const Verify: React.FC = () => {
                     </Grid>
                 </Grid>
                 <Grid container spacing={2} paddingTop={3}>
-                    <Grid item xs={5} md={3}>
-                        <TextField
-                            label="Rolle"
-                            variant="outlined"
-                            fullWidth
-                            value={formData.role}
-                            onChange={(e) => handleChange('role', e.target.value)}
-                        />
-                    </Grid>
-                    <Grid item xs={5} md={3}>
-                        <TextField
-                            label="Gruppe"
-                            variant="outlined"
-                            fullWidth
-                            value={formData.groupName}
-                            onChange={(e) => handleChange('groupName', e.target.value)}
-                        />
-                    </Grid>
-
-                    <Grid item xs={5} md={3}>
-                        <TextField
-                            label="Startdato"
-                            variant="outlined"
-                            fullWidth
-                            value={formData.startDate}
-                            onChange={(e) => handleChange('startDate', e.target.value)}
-                        />
-                    </Grid>
-                    <Grid item xs={5} md={3}>
-                        <TextField
-                            label="Sluttdato"
-                            variant="outlined"
-                            fullWidth
-                            value={formData.endDate}
-                            onChange={(e) => handleChange('endDate', e.target.value)}
-                        />
-                    </Grid>
-
+                    {formFields.map((field) => (
+                        <Grid item xs={5} md={3} key={field.key}>
+                            <TextField
+                                label={field.label}
+                                variant="outlined"
+                                fullWidth
+                                value={formData[field.key]}
+                                sx={{color:{getColor}}}
+                                onChange={(e) => handleChange(field.key, e.target.value)}
+                            />
+                        </Grid>
+                    ))}
                 </Grid>
 
-                {/* Ekstra roller */}
                 {formData.extraRole?.filter(extraRole =>
                     extraRole.role || extraRole.groupName || extraRole.startDate || extraRole.endDate
                 ).map((extraRole, index) => (

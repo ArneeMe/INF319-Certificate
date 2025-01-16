@@ -1,3 +1,4 @@
+'use client'
 import React, {useEffect, useState} from 'react';
 import {db} from '@/app/firebase/fb_config';
 import {collection, getDocs} from 'firebase/firestore';
@@ -106,7 +107,7 @@ const AdminPage: React.FC = () => {
                                 color="primary"
                                 size="small"
                             >
-                                <Typography>
+                                <Typography color={"error"}>
                                     Slett data
                                 </Typography>
                             </Button>
