@@ -2,11 +2,12 @@
 import React, {useEffect, useState} from 'react';
 import {useSearchParams} from 'next/navigation';
 import {ExtraRole, Volunteer} from '@/app/util/Volunteer';
-import {Box, Button, Grid, Palette, TextField, Typography} from '@mui/material';
+import {Box, Grid, Palette, TextField, Typography} from '@mui/material';
 import {collection, getDocs, query, where} from 'firebase/firestore';
 import {db} from '@/app/firebase/fb_config';
 import {hashFunction} from "@/app/util/hashFunction";
 import {customTheme} from "@/app/style/customTheme";
+import {formatDate} from "@/app/util/formatDate";
 
 const Verify: React.FC = () => {
     const paramsString = useSearchParams().toString();
@@ -155,7 +156,13 @@ const Verify: React.FC = () => {
                                 label={field.label}
                                 variant="outlined"
                                 fullWidth
-                                value={formData[field.key]}
+                                value={
+                                    field.key === 'startDate'
+                                        ? formatDate(formData.startDate)
+                                        : field.key === 'endDate'
+                                            ? formatDate(formData.endDate)
+                                            : formData[field.key]
+                                }
                                 sx={{color:{getColor}}}
                                 onChange={(e) => handleChange(field.key, e.target.value)}
                             />
@@ -191,7 +198,7 @@ const Verify: React.FC = () => {
                                     label={`Startdato ${index + 1}`}
                                     variant="outlined"
                                     fullWidth
-                                    value={extraRole.startDate}
+                                    value={formatDate(extraRole.startDate)}
                                     onChange={(e) => handleExtraRoleChange(index, 'startDate', e.target.value)}
                                 />
                             </Grid>
@@ -200,7 +207,7 @@ const Verify: React.FC = () => {
                                     label={`Sluttdato ${index + 1}`}
                                     variant="outlined"
                                     fullWidth
-                                    value={extraRole.endDate}
+                                    value={formatDate(extraRole.endDate)}
                                     onChange={(e) => handleExtraRoleChange(index, 'endDate', e.target.value)}
                                 />
                             </Grid>
