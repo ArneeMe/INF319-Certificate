@@ -65,7 +65,7 @@ const VolunteerForm = () => {
 
     const handleSubmit = (event: any) => {
         event.preventDefault();
-        setOpenConfirmDialog(true); // Åpne bekreftelsesdialogen
+        setOpenConfirmDialog(true);
     };
     const handleCloseSummary = () => {
         setOpenSummaryDialog(false);
@@ -93,7 +93,12 @@ const VolunteerForm = () => {
             <Grid container spacing={0}>
                 <Grid item xs={8}>
                     <Typography variant="h5">
-                        Frivillig Attest
+                        Søk om attest - echo - Linjeforeningen for informatikk
+                    </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                    <Typography>
+                        Her kan du sende inn din informasjon for å få en attest fra echo!
                     </Typography>
                 </Grid>
                 <Grid item xs={2}>
