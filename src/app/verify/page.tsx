@@ -105,7 +105,6 @@ const Verify: React.FC = () => {
 
     const handleChange = (field: keyof Volunteer, value: string) => {
         setFormData((prev: Volunteer) => ({...prev, [field]: value}));
-        verifyHash()
     };
 
     const handleExtraRoleChange = (index: number, field: keyof ExtraRole, value: string) => {
@@ -117,7 +116,7 @@ const Verify: React.FC = () => {
 
     useEffect(() => {
         verifyHash();
-    },);
+    },[formData]);
 
     return (
         <Box color={getColor}
@@ -128,11 +127,6 @@ const Verify: React.FC = () => {
             margin: 2,
         }}>
             <Typography variant="h3">Verifikasjon</Typography>
-            <Grid item xs={12} md={6}>
-                <Button variant="contained" onClick={verifyHash}>
-                    Verifiser
-                </Button>
-            </Grid>
             <Grid item xs={12} md={6}>
                 <Typography variant="h6" color={getColor()}>
                     {verificationResult === null

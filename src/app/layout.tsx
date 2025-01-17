@@ -1,4 +1,5 @@
 import RootLayoutProvider from '@/app/style/rootLayout';
+import {Suspense} from "react";
 
 export const metadata = {
     title: 'Min Next.js App',
@@ -10,7 +11,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <html lang="en">
         <RootLayoutProvider>
             <body>
-            {children}
+                <Suspense fallback={<div>Laster...</div>}>
+                    {children}
+                </Suspense>
             </body>
         </RootLayoutProvider>
         </html>
