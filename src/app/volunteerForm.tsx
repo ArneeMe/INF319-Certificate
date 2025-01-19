@@ -36,7 +36,6 @@ const VolunteerForm = () => {
             {groupName: '', startDate: '', endDate: '', role: ''},
             {groupName: '', startDate: '', endDate: '', role: ''},
         ],
-        email: '',
     });
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,19 +234,6 @@ const VolunteerForm = () => {
 
                         </Grid>
                     ))}
-                    <Grid item xs={12} md={10}>
-                        <TextField
-                            margin="normal"
-                            fullWidth
-                            label="Epost"
-                            name="email"
-                            onChange={handleChange}
-                        />
-                        <FormHelperText>
-                            Hvis du vil få epost om at PDF-en er klar kan du legge igjen epost.
-                            Du vil ikke få PDF-en tilsendt på epost.
-                        </FormHelperText>
-                    </Grid>
                     <Grid item xs={6} md={5}>
                         <Button
                             type="submit"
