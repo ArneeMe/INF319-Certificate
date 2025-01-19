@@ -1,15 +1,17 @@
 'use client'
 import React, {useEffect, useState} from 'react';
-import {db} from '@/app/firebase/fb_config';
-import {collection, getDocs} from 'firebase/firestore';
-import {Button, Grid, Link, Paper, Typography} from '@mui/material';
+import {auth} from '@/app/firebase/fb_config';
+import {Button, Grid, Paper, Typography} from '@mui/material';
 import {Volunteer} from '@/app/util/Volunteer'
-import {generatePDF} from "@/app/login/adminpage/generatePDF"
+import {generatePDF} from "@/app/util/generatePDF"
 import {deleteVolunteer} from "@/app/util/deleteVolunteer";
-import ConfirmDialog from "@/app/util/confirmDialog";
-import {generateURL} from "@/app/login/adminpage/generateURL";
-import {submitHash} from "@/app/login/adminpage/submitHash";
-import {formatVolunteerDetails} from "@/app/util/formatVolunteer";
+import {generateURL} from "@/app/util/generateURL";
+import {submitHash} from "@/app/util/submitHash";
+import {formatVolunteerDetails} from "@/app/components/formatVolunteer";
+import {useRouter} from "next/navigation";
+import {onAuthStateChanged} from 'firebase/auth';
+import {fetchVolunteers} from "@/app/util/fetchVolunteers";
+import ConfirmAdminDialogs from "@/app/components/confirmAdminDialogs";
 
 
 const AdminPage: React.FC = () => {
@@ -19,22 +21,27 @@ const AdminPage: React.FC = () => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openPDFDialog, setOpenPDFDialog] = useState(false);
     const [pdfUrl, setPdfUrl] = useState('');
+    const router = useRouter();
+    const [loading, setLoading] = useState<boolean>(true);
+
 
     useEffect(() => {
-        const fetchVolunteers = async () => {
-            const querySnapshot = await getDocs(collection(db, 'volunteers'));
-            const volunteersData: Volunteer[] = [];
-            querySnapshot.forEach((doc) => {
-                const data = doc.data() as Omit<Volunteer, 'id'>;
-                volunteersData.push({
-                    id: doc.id,
-                    ...data,
-                });
-            });
-            setVolunteers(volunteersData);
-        };
-        fetchVolunteers();
-    }, []);
+        const authStatus = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                setLoading(false);
+                setVolunteers(await fetchVolunteers())
+            } else {
+                router.push('/login');
+            }
+        });
+
+        return () => authStatus();
+    }, [router]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
 
     const handleDelete = async (id: string) => {
         await deleteVolunteer(id);
@@ -68,7 +75,7 @@ const AdminPage: React.FC = () => {
             try {
                 await generatePDF(selectedVolunteer);
                 setPdfUrl(generateURL(selectedVolunteer));
-                submitHash(selectedVolunteer)
+                await submitHash(selectedVolunteer)
                 setOpenPDFDialog(true);
                 setOpenDialog(false);
             } catch (error) {
@@ -91,7 +98,7 @@ const AdminPage: React.FC = () => {
             <Grid container spacing={2}>
                 {volunteers.map((volunteer: Volunteer) => (
                     <Grid item xs={12} sm={6} key={volunteer.id}>
-                        <Paper elevation={3} style={{ padding: '20px', marginTop: '10px' }}>
+                        <Paper elevation={3} style={{padding: '20px', marginTop: '10px'}}>
                             {formatVolunteerDetails(volunteer)}
                             <Button
                                 variant="contained"
@@ -116,40 +123,19 @@ const AdminPage: React.FC = () => {
                 ))}
             </Grid>
 
-            <ConfirmDialog
-                open={openDialog}
-                title="Bekreft generering av PDF"
-                message={`Er du sikker på at du vil generere PDF for ${selectedVolunteer?.personName}?`}
-                details={selectedVolunteer && formatVolunteerDetails(selectedVolunteer)}
-                onConfirm={handleConfirm}
-                onClose={handleClose}
-                confirmButtonText="Generer PDF"
+            <ConfirmAdminDialogs
+                openDialog={openDialog}
+                openDeleteDialog={openDeleteDialog}
+                openPDFDialog={openPDFDialog}
+                selectedVolunteer={selectedVolunteer}
+                pdfUrl={pdfUrl}
+                handleConfirm={handleConfirm}
+                handleDeleteConfirm={handleDeleteConfirm}
+                handleClose={handleClose}
+                setOpenPDFDialog={setOpenPDFDialog}
+                setOpenDeleteDialog={setOpenDeleteDialog}
             />
 
-            <ConfirmDialog
-                open={openDeleteDialog}
-                title="Bekreft sletting"
-                message={`Er du sikker på at du vil slette denne PDF-en til ${selectedVolunteer?.personName}`}
-                onConfirm={handleDeleteConfirm}
-                onClose={() => setOpenDeleteDialog(false)}
-                confirmButtonText="Slett"
-            />
-
-            <ConfirmDialog
-                open={openPDFDialog}
-                title="PDF-en er Generert"
-                message="Husk å les over og sørg for at alt er riktig, så slett brukeren fra databasen."
-                details={<Typography variant="body1">
-                    Her er verifiserings URL-en:
-                    <Link href={pdfUrl} target="_blank" rel="">
-                        {pdfUrl}
-                    </Link>
-                </Typography>}
-                onConfirm={() => setOpenPDFDialog(false)}
-                onClose={() => setOpenPDFDialog(false)}
-                confirmButtonText="OK"
-                showCancelButton={false}
-            />
         </>
     );
 };
