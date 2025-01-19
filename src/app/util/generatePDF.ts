@@ -1,8 +1,8 @@
-import {Volunteer} from '../../util/Volunteer'
+import {Volunteer} from './Volunteer'
 import {barcodes, image, text} from '@pdfme/schemas';
 import {generate} from '@pdfme/generator';
 import {customTemplate} from '@/app/pdfinfo/customTemplate';
-import {generateURL} from "@/app/login/adminpage/generateURL";
+import {generateURL} from "@/app/util/generateURL";
 import {generic_echo, undergrupper} from "@/app/pdfinfo/echoInfo";
 import {signaturePerson1, signaturePerson2} from "@/app/pdfinfo/signatureInfo";
 import { formatDate } from '@/app/util/formatDate';

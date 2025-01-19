@@ -1,5 +1,5 @@
 import {Volunteer} from "@/app/util/Volunteer";
-import {generateParams} from "@/app/login/adminpage/generateParams";
+import {generateParams} from "@/app/util/generateParams";
 import {addDoc, collection} from "firebase/firestore";
 import {db} from "@/app/firebase/fb_config";
 import {hashFunction} from "@/app/util/hashFunction";
