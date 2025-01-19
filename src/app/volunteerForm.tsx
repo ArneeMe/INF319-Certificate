@@ -15,8 +15,8 @@ import {addDoc, collection} from "firebase/firestore";
 import Link from "next/link";
 import {v4 as uuidv4} from 'uuid';
 import {Volunteer} from "@/app/util/Volunteer";
-import ConfirmDialog from "@/app/util/confirmDialog";
-import {formatVolunteerDetails} from "@/app/util/formatVolunteer";
+import ConfirmDialog from "@/app/components/confirmDialog";
+import {formatVolunteerDetails} from "@/app/components/formatVolunteer";
 import {undergrupper} from "@/app/pdfinfo/echoInfo";
 
 
@@ -36,6 +36,7 @@ const VolunteerForm = () => {
             {groupName: '', startDate: '', endDate: '', role: ''},
             {groupName: '', startDate: '', endDate: '', role: ''},
         ],
+        email: '',
     });
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +177,7 @@ const VolunteerForm = () => {
                         />
                     </Grid>
 
-                    <Grid item xs={6} md={5}>
+                    <Grid item xs={12} md={12}>
                         <Button
                             type="button"
                             onClick={() => setShowExtraRoles(prev => !prev)}
@@ -234,6 +235,19 @@ const VolunteerForm = () => {
 
                         </Grid>
                     ))}
+                    <Grid item xs={12} md={10}>
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            label="Epost"
+                            name="email"
+                            onChange={handleChange}
+                        />
+                        <FormHelperText>
+                            Hvis du vil få epost om at PDF-en er klar kan du legge igjen epost.
+                            Du vil ikke få PDF-en tilsendt på epost.
+                        </FormHelperText>
+                    </Grid>
                     <Grid item xs={6} md={5}>
                         <Button
                             type="submit"

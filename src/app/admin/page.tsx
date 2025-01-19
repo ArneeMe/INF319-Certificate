@@ -12,6 +12,7 @@ import {useRouter} from "next/navigation";
 import {onAuthStateChanged} from 'firebase/auth';
 import {fetchVolunteers} from "@/app/util/fetchVolunteers";
 import ConfirmAdminDialogs from "@/app/components/confirmAdminDialogs";
+import LoadingPage from "@/app/components/loadingPage";
 
 
 const AdminPage: React.FC = () => {
@@ -31,6 +32,7 @@ const AdminPage: React.FC = () => {
                 setLoading(false);
                 setVolunteers(await fetchVolunteers())
             } else {
+                console.log("ikke logget inn")
                 router.push('/login');
             }
         });
@@ -39,7 +41,7 @@ const AdminPage: React.FC = () => {
     }, [router]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <LoadingPage/>
     }
 
 

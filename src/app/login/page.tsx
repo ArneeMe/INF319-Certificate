@@ -1,20 +1,13 @@
 'use client'
-import {useEffect, useState} from 'react';
-import { useRouter } from 'next/navigation';
-import { Container, Box, Typography, TextField, Button } from '@mui/material';
-import {auth} from '@/app/firebase/fb_config'
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {Box, Button, Container, TextField, Typography} from '@mui/material';
 
 const LoginPage: React.FC = () => {
     const router = useRouter();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if(auth){
-            router.push('/admin')
-        }
-    })
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
