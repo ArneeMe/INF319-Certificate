@@ -3,58 +3,33 @@ import React, {useEffect, useState} from 'react';
 import {useSearchParams} from 'next/navigation';
 import {ExtraRole, Volunteer} from '@/app/util/Volunteer';
 import {Box, Grid, Palette, TextField, Typography} from '@mui/material';
-import {collection, getDocs, query, where} from 'firebase/firestore';
-import {db} from '@/app/firebase/fb_config';
-import {hashFunction} from "@/app/util/hashFunction";
 import {customTheme} from "@/app/style/customTheme";
 import {formatDate} from "@/app/util/formatDate";
 
 const Verify: React.FC = () => {
-    const paramsString = useSearchParams().toString();
+    const paramsString: string = useSearchParams()?.toString() || "";
     const paramsArray: string[] = paramsString.split('_').map(param => decodeURIComponent(param.replace(/\+/g, ' ')));
     paramsArray[paramsArray.length - 1] = paramsArray[paramsArray.length - 1].slice(0, -1); //removed because = char in URL
-    const [verificationResult, setVerificationResult] = useState<'verified' | 'invalid' | null>(null);
-    const colorTheme:Palette = customTheme.palette
+
+    const [isValid, setIsValid] = useState<boolean | null>(null);
+    const colorTheme: Palette = customTheme.palette
 
     const verifyHash = async () => {
-        const toCheck = [
-            formData.id,
-            formData.personName,
-            formData.groupName,
-            formData.startDate,
-            formData.endDate,
-            formData.role,
-            ...((formData.extraRole || []).flatMap(role => [
-                role.groupName,
-                role.startDate,
-                role.endDate,
-                role.role,
-            ])),
-        ].join("_");
-
         try {
-            const generatedHash = await hashFunction(toCheck);
-            const q = query(collection(db, "hashcollection"), where("id", "==", formData.id));
-            const querySnapshot = await getDocs(q);
-
-            if (!querySnapshot.empty) {
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if (generatedHash === data.hash) {
-                        setVerificationResult('verified');
-                        console.log("Hash er gyldig!");
-                    } else {
-                        setVerificationResult('invalid');
-                        console.log("Dette hashes", toCheck)
-                        console.log("Ingen gyldig hash funnet, det ble:", generatedHash);
-                        console.log("I DB-en er det:", data.hash);
-                    }
-                });
+            const response = await fetch('/api/verify/verifyHash', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ formData }),
+            });
+            if (response.ok) {
+                setIsValid(true)
             } else {
-                console.log("Ingen attester funnet med den spesifikke ID-en.");
+                setIsValid(false)
             }
         } catch (error) {
-            console.error("Feil ved verifisering av hash: ", error);
+            setIsValid(null)
         }
     };
 
@@ -95,9 +70,9 @@ const Verify: React.FC = () => {
     ];
 
     const getColor = () => {
-        if (verificationResult === 'verified') {
+        if (isValid === true) {
             return colorTheme.primary.main;
-        } else if (verificationResult === 'invalid') {
+        } else if (isValid === false) {
             return colorTheme.error.main;
         } else {
             return colorTheme.secondary.main;
@@ -130,9 +105,9 @@ const Verify: React.FC = () => {
             <Typography variant="h3">Verifikasjon</Typography>
             <Grid item xs={12} md={6}>
                 <Typography variant="h6" color={getColor()}>
-                    {verificationResult === null
+                    {isValid === null
                         ? "Laster..."
-                        : verificationResult === 'verified'
+                        : isValid
                             ? "Attesten er gyldig!"
                             : "Attesten er ugyldig."}
                 </Typography>
