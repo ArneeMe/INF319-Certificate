@@ -44,6 +44,22 @@ const AdminPage: React.FC = () => {
         return <LoadingPage/>
     }
 
+    const handleLogout = async () => {
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (response.ok) {
+           // router.push('/login');
+            console.log(auth.currentUser)
+            console.log(auth)
+            console.log(response)
+        } else {
+            console.error('Logout failed');
+        }
+    };
+
 
     const handleDelete = async (id: string) => {
         await deleteVolunteer(id);
@@ -97,6 +113,7 @@ const AdminPage: React.FC = () => {
             <Typography variant="h4" gutterBottom>
                 Oversikt
             </Typography>
+            <Button onClick={handleLogout}>Logg ut</Button>
             <Grid container spacing={2}>
                 {volunteers.map((volunteer: Volunteer) => (
                     <Grid item xs={12} sm={6} key={volunteer.id}>
