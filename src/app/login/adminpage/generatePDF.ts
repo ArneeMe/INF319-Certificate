@@ -2,7 +2,7 @@ import {Volunteer} from '../../util/Volunteer'
 import {barcodes, image, text} from '@pdfme/schemas';
 import {generate} from '@pdfme/generator';
 import {customTemplate} from '@/app/pdfinfo/customTemplate';
-import {generateURL} from "@/app/login/adminpage/generateURL";
+import {baseURL, generateURL} from "@/app/login/adminpage/generateURL";
 import {generic_echo, undergrupper} from "@/app/pdfinfo/echoInfo";
 import {signaturePerson1, signaturePerson2} from "@/app/pdfinfo/signatureInfo";
 import { formatDate } from '@/app/util/formatDate';
@@ -14,7 +14,6 @@ const getPdfInput = (volunteer: Volunteer) => {
     const yyyy = today.getFullYear();
     const name = volunteer.personName;
     const fullURL = generateURL(volunteer)
-    console.log(fullURL)
     const getVervText = (index: number) => {
         if (volunteer.extraRole && volunteer.extraRole.length > index) {
             const role = volunteer.extraRole[index];
@@ -43,6 +42,9 @@ const getPdfInput = (volunteer: Volunteer) => {
         signature_phone_1: signaturePerson1.phone,
         signature_phone_2: signaturePerson2.phone,
         qr_code: `${fullURL}`,
+        qr_info: `Scan for å verifisere`,
+        qr_page: `${baseURL}`,
+
     }
     ]
 }

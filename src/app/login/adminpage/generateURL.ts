@@ -1,8 +1,9 @@
 import {Volunteer} from "@/app/util/Volunteer";
 import {generateParams} from "@/app/login/adminpage/generateParams";
 
+export const baseURL = `${window.location.protocol}//${window.location.host}`;
+
 export const generateURL = (formData: Volunteer): string => {
-    const baseUrl = `${window.location.protocol}//${window.location.host}`;
     const path = 'verify'
-    return `${baseUrl}/${path}?${generateParams(formData)}`;
+    return `${baseURL}/${path}?${generateParams(formData)}`;
 };
