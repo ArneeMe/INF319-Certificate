@@ -14,6 +14,7 @@ const getPdfInput = (volunteer: Volunteer) => {
     const yyyy = today.getFullYear();
     const name = volunteer.personName;
     const fullURL = generateURL(volunteer)
+    const basePageURL = baseURL();
     const getVervText = (index: number) => {
         if (volunteer.extraRole && volunteer.extraRole.length > index) {
             const role = volunteer.extraRole[index];
@@ -43,7 +44,7 @@ const getPdfInput = (volunteer: Volunteer) => {
         signature_phone_2: signaturePerson2.phone,
         qr_code: `${fullURL}`,
         qr_info: `Scan for å verifisere`,
-        qr_page: `${baseURL}`,
+        qr_page: `${basePageURL}`,
 
     }
     ]

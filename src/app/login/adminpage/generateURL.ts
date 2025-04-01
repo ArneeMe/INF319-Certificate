@@ -6,6 +6,7 @@ export const baseURL = () : string => {
 }
 
 export const generateURL = (formData: Volunteer): string => {
+    const baseUrl = `${window.location.protocol}//${window.location.host}`;
     const path = 'verify'
-    return `${baseURL}/${path}?${generateParams(formData)}`;
+    return `${baseUrl}/${path}?${generateParams(formData)}`;
 };
