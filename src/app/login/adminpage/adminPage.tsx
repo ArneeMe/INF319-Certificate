@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import {db} from '@/app/firebase/fb_config';
 import {collection, getDocs} from 'firebase/firestore';
-import {Button, Grid, Link, Paper, Typography} from '@mui/material';
+import {Button, Checkbox, FormControlLabel, Grid, Link, Paper, Typography} from '@mui/material';
 import {Volunteer} from '@/app/util/Volunteer'
 import {generatePDF} from "@/app/login/adminpage/generatePDF"
 import {deleteVolunteer} from "@/app/util/deleteVolunteer";
@@ -16,7 +16,11 @@ const AdminPage: React.FC = () => {
     const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
+    const [selectedIDs, setSelectedIDs] = useState<string[]>([]);
+    const [selectedIDsForDeletion, setSelectedIDsForDeletion] = useState<string[]>([]);
+
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openBatchDeleteDialog, setOpenBatchDeleteDialog] = useState(false);
     const [openPDFDialog, setOpenPDFDialog] = useState(false);
     const [pdfUrl, setPdfUrl] = useState('');
 
@@ -35,6 +39,14 @@ const AdminPage: React.FC = () => {
         };
         fetchVolunteers();
     }, []);
+
+    const handleSelectID = (id: string) => {
+        if (selectedIDs.includes(id)) {
+            setSelectedIDs(selectedIDs.filter(volId => volId !== id));
+        } else {
+            setSelectedIDs([...selectedIDs, id]);
+        }
+    };
 
     const handleDelete = async (id: string) => {
         await deleteVolunteer(id);
@@ -58,6 +70,37 @@ const AdminPage: React.FC = () => {
             }
         }
     };
+
+
+    const openBatchDeleteClick = () => {
+        setSelectedIDsForDeletion([...selectedIDs]);
+        setOpenBatchDeleteDialog(true);
+    };
+
+    const handleBatchDeleteConfirm = async () => {
+        if (selectedIDsForDeletion.length > 0) {
+            try {
+                for (const id of selectedIDsForDeletion) {
+                    await handleDelete(id);
+                }
+
+                // Update state
+                setVolunteers(volunteers.filter(volunteer =>
+                    !selectedIDsForDeletion.includes(volunteer.id)
+                ));
+
+                // Reset selection and close dialog
+                setOpenBatchDeleteDialog(false);
+                setSelectedIDsForDeletion([]);
+                setSelectedIDs([]);
+            } catch (error) {
+                console.log(error);
+                alert('Feil ved sletting av data');
+            }
+        }
+    };
+
+
 
     const handleClick = (volunteer: Volunteer) => {
         setSelectedVolunteer(volunteer);
@@ -85,14 +128,35 @@ const AdminPage: React.FC = () => {
 
     return (
         <>
-            <Typography variant="h4" gutterBottom>
-                Oversikt
-            </Typography>
+            <Grid container>
+                <Grid item sm={10}>
+                    <Typography variant="h4" gutterBottom>
+                        Oversikt
+                    </Typography>
+                </Grid>
+                <Grid item sm={2}>
+                    <Button onClick={openBatchDeleteClick}>
+                        Delete all selected
+                    </Button>
+                </Grid>
+            </Grid>
             <Grid container spacing={2}>
                 {volunteers.map((volunteer: Volunteer) => (
                     <Grid item xs={12} sm={6} key={volunteer.id}>
                         <Paper elevation={3} style={{ padding: '20px', marginTop: '10px' }}>
-                            {formatVolunteerDetails(volunteer)}
+                            <Grid>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={selectedIDs.includes(volunteer.id)}
+                                            onChange={() => handleSelectID(volunteer.id)}
+                                            color="primary"
+                                        />
+                                    }
+                                    label=""
+                                />
+                                {formatVolunteerDetails(volunteer)}
+                            </Grid>
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -132,6 +196,14 @@ const AdminPage: React.FC = () => {
                 message={`Er du sikker på at du vil slette denne PDF-en til ${selectedVolunteer?.personName}`}
                 onConfirm={handleDeleteConfirm}
                 onClose={() => setOpenDeleteDialog(false)}
+                confirmButtonText="Slett"
+            />
+            <ConfirmDialog
+                open={openBatchDeleteDialog}
+                title="Bekreft sletting av alle"
+                message={`Vil du slette ${selectedIDs.length} valgte PDF-er?`}
+                onConfirm={handleBatchDeleteConfirm }
+                onClose={() => setOpenBatchDeleteDialog(false)}
                 confirmButtonText="Slett"
             />
 

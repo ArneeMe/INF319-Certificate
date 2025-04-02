@@ -97,7 +97,7 @@ const VolunteerForm = () => {
             <Grid container spacing={0}>
                 <Grid item xs={8}>
                     <Typography variant="h5">
-                        Søk om attest - echo - Linjeforeningen for informatikk
+                        Søk om attest til echo - Linjeforeningen for informatikk
                     </Typography>
                 </Grid>
                 <Grid item xs={7}>
