@@ -23,6 +23,7 @@ import {undergrupper} from "@/app/pdfinfo/echoInfo";
 const VolunteerForm = () => {
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openSummaryDialog, setOpenSummaryDialog] = useState(false);
+    const [openHelpDialog, setOpenHelpDialog] = useState(false);
     const [showExtraRoles, setShowExtraRoles] = useState(false);
     const [formData, setformData] = useState<Volunteer>({
         id: '',
@@ -70,6 +71,9 @@ const VolunteerForm = () => {
     const handleCloseSummary = () => {
         setOpenSummaryDialog(false);
     };
+    const handleHelpSummary = () => {
+        setOpenHelpDialog(false);
+    };
 
     const handleConfirmSubmit = async () => {
         const uuid = uuidv4();
@@ -96,10 +100,15 @@ const VolunteerForm = () => {
                         Søk om attest - echo - Linjeforeningen for informatikk
                     </Typography>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={7}>
                     <Typography>
                         Her kan du sende inn din informasjon for å få en attest fra echo!
                     </Typography>
+                </Grid>
+                <Grid item xs={1}>
+                    <Button onClick={() => setOpenHelpDialog(true)}  color="primary">
+                        Hjelp
+                    </Button>
                 </Grid>
                 <Grid item xs={2}>
                     <Link href="/login" passHref>
@@ -267,6 +276,29 @@ const VolunteerForm = () => {
                 confirmButtonText="OK"
                 showCancelButton={false}
             />
+            <ConfirmDialog
+                open={openHelpDialog}
+                title="Hva er denne nettsiden??"
+                message=""
+                onConfirm={handleHelpSummary}
+                details={
+                    <Typography>
+                        Dette er en nettside for å gi deg attest fra echo. Du sender inn din informasjon i en database,
+                        en admin vil inspisere det du har sendt inn.
+                        Fyll ut info om deg, dine roller. Du kan velge inntil 3 ekstra roller.
+                        Bruk din "hovedrolle" først, den blir mest synlig på PDF-en.
+                        Hvis dette ser bra ut vil det bli generert en PDF, og din informasjon vil bli slettet fra
+                        databasen. Vi unngår å lagre dataen din lenge.
+
+                        Vi kommer derimot til å lagre hash-verdien til
+                        sertifikatet slik at attesten din kan verifiseres.
+                    </Typography>
+                }
+                onClose={handleHelpSummary}
+                confirmButtonText="takk for info 😊"
+                showCancelButton={false}
+            />
+
 
 
         </Container>
