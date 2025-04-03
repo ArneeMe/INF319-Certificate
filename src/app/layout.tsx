@@ -2,8 +2,8 @@ import RootLayoutProvider from '@/app/style/rootLayout';
 import {Suspense} from "react";
 
 export const metadata = {
-    title: 'Min Next.js App',
-    description: 'En beskrivelse av appen min',
+    title: 'echo Attest',
+    description: 'Lag og verifiser attester for echo!',
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
