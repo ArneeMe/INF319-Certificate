@@ -49,7 +49,7 @@ export const getPdfInput = async (volunteer: Volunteer): Promise<Certificate[]> 
         if (volunteer.extraRole && volunteer.extraRole.length > index) {
             const role = volunteer.extraRole[index];
             if (role.role && role.groupName && role.startDate && role.endDate) {
-                return `${name} har og hatt en stilling som ${role.role} i ${role.groupName} fra ${role.startDate} til ${role.endDate}`;
+                return `${name} har og hatt en stilling som ${role.role} i ${role.groupName} fra ${formatDate(role.startDate)} til ${formatDate(role.endDate)}`;
             }
         }
         return '';
