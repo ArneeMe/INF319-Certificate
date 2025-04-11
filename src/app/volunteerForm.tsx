@@ -292,6 +292,8 @@ const VolunteerForm = () => {
 
                         Vi kommer derimot til å lagre hash-verdien til
                         sertifikatet slik at attesten din kan verifiseres.
+
+                        Spørsmål? Send epost til hei@attester.no da vel!
                     </Typography>
                 }
                 onClose={handleHelpSummary}
